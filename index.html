@@ -292,7 +292,7 @@
     50%{ transform:scaleY(1); }
   }
 
-  /* Karaoke lyrics */
+  /* Lyrics */
   .lyrics-card{
     margin-top:20px;
     background:linear-gradient(155deg, rgba(23,10,15,0.6), rgba(92,26,38,0.28));
@@ -315,43 +315,24 @@
     font-size:11px;
     letter-spacing:0.1em;
     color:rgba(203,183,174,0.5);
-    margin:0 0 20px;
+    margin:0 0 18px;
   }
-  .lyrics-viewport{
-    position:relative;
-    height:150px;
-    overflow:hidden;
-    mask-image:linear-gradient(to bottom, transparent, black 28%, black 72%, transparent);
-    -webkit-mask-image:linear-gradient(to bottom, transparent, black 28%, black 72%, transparent);
+  .lyrics-scroll{
+    max-height:260px;
+    overflow-y:auto;
+    padding-right:8px;
   }
-  .lyrics-track{
-    position:absolute;
-    width:100%;
-    top:50%;
-    transform:translateY(-50%);
-    transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);
-  }
+  .lyrics-scroll::-webkit-scrollbar{ width:5px; }
+  .lyrics-scroll::-webkit-scrollbar-thumb{ background:rgba(201,162,75,0.35); border-radius:4px; }
   .lyrics-line{
     text-align:center;
     font-family:'Lora', serif;
     font-size:15px;
-    line-height:2.4;
-    color:rgba(203,183,174,0.4);
-    transition:color 0.5s ease, font-size 0.4s ease;
-    padding:0 10px;
+    line-height:2.1;
+    color:var(--cream-dim);
+    padding:0 6px;
   }
-  .lyrics-line.active{
-    color:var(--gold-soft);
-    font-family:'Cormorant Garamond', serif;
-    font-style:italic;
-    font-size:21px;
-  }
-  .lyrics-hint{
-    text-align:center;
-    font-size:11px;
-    color:rgba(203,183,174,0.45);
-    margin-top:16px;
-  }
+
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; }
@@ -415,10 +396,7 @@ Stay strong saton always, my love. Mwahh 😘🥰</p>
     <div class="lyrics-card">
       <p class="lyrics-heading">our song</p>
       <p class="lyrics-sub">MAY THIRTEEN</p>
-      <div class="lyrics-viewport">
-        <div class="lyrics-track" id="lyricsTrack"></div>
-      </div>
-      <p class="lyrics-hint">press play above to follow along</p>
+      <div class="lyrics-scroll" id="lyricsScroll"></div>
     </div>
 
     <div class="heart-row">
@@ -447,37 +425,84 @@ Stay strong saton always, my love. Mwahh 😘🥰</p>
     }
   }
 
-  // Karaoke lyrics (estimated timing — nudge the numbers in LYRICS below if it drifts)
-  const LYRICS = [{"t": 14.0, "text": "I still remember that day, May thirteen"}, {"t": 21.5, "text": "When you came into my life, like a beautiful dream"}, {"t": 28.9, "text": "Never knew a single moment could change everything"}, {"t": 36.4, "text": "Now every road I take somehow leads back to you and me"}, {"t": 43.9, "text": "And even when the miles are between us"}, {"t": 47.6, "text": "I close my eyes and you're right here"}, {"t": 51.3, "text": "Every night I whisper your name"}, {"t": 55.1, "text": "Just to make you feel a little less far away"}, {"t": 58.8, "text": "'Cause I would cross every ocean just to hold you again"}, {"t": 62.9, "text": "Count every sunrise, wait for the day"}, {"t": 67.1, "text": "When distance disappears and you're standing in my arms"}, {"t": 71.2, "text": "And I don't have to miss your smile from afar"}, {"t": 75.4, "text": "From May thirteen until forever starts"}, {"t": 79.5, "text": "No matter where we are, you're always in my heart"}, {"t": 83.7, "text": "And when I finally see you again"}, {"t": 87.8, "text": "I'll hold you like I'm never letting go"}, {"t": 92.0, "text": "My love, I'm coming home to you"}, {"t": 96.1, "text": "We've had our nights when the waiting felt so long"}, {"t": 103.6, "text": "Times when all we had were messages and songs"}, {"t": 111.1, "text": "But somehow every “I miss you” made us stronger"}, {"t": 118.5, "text": "And every day apart only made me love you longer"}, {"t": 126.0, "text": "So keep my heart until I'm there"}, {"t": 129.7, "text": "Keep my place beside you"}, {"t": 133.5, "text": "'Cause there's a future waiting for us"}, {"t": 137.2, "text": "And I know we'll make it through"}, {"t": 140.9, "text": "'Cause I would cross every ocean just to hold you again"}, {"t": 145.1, "text": "Count every sunrise, wait for the day"}, {"t": 149.2, "text": "When distance disappears and you're standing in my arms"}, {"t": 153.4, "text": "And I don't have to miss your smile from afar"}, {"t": 157.5, "text": "From May thirteen until forever starts"}, {"t": 161.7, "text": "No matter where we are, you're always in my heart"}, {"t": 165.8, "text": "And when I finally see you again"}, {"t": 170.0, "text": "I'll hold you like I'm never letting go"}, {"t": 174.1, "text": "My love, I'm coming home to you"}, {"t": 178.3, "text": "One day we'll laugh about these lonely nights"}, {"t": 181.4, "text": "The tears, the calls, the “goodnight”"}, {"t": 184.6, "text": "We'll look back and say, we made it through"}, {"t": 187.8, "text": "Every mile was worth it"}, {"t": 191.0, "text": "'Cause every road led me to you"}, {"t": 194.1, "text": "And when I see you waiting there"}, {"t": 197.3, "text": "I won't need words to say"}, {"t": 200.5, "text": "I'll just hold you close"}, {"t": 203.6, "text": "And let my heart tell you"}, {"t": 206.8, "text": "“I missed you every single day.”"}, {"t": 210.0, "text": "I would cross every ocean just to hold you again"}, {"t": 213.4, "text": "No more counting the days"}, {"t": 216.8, "text": "No more wishing you were here"}, {"t": 220.2, "text": "I'll finally have you in my arms"}, {"t": 223.6, "text": "The place where you've always belonged"}, {"t": 227.0, "text": "From May thirteen until forever starts"}, {"t": 230.4, "text": "You became my home, wherever we are"}, {"t": 233.7, "text": "And when I finally see you again"}, {"t": 237.1, "text": "I'll hold you like I'm never letting go"}, {"t": 240.5, "text": "After all this time, after all these miles"}, {"t": 243.9, "text": "I'm finally coming home to you"}, {"t": 247.3, "text": "May thirteen was where our story began"}, {"t": 250.5, "text": "And wherever life takes us from here"}, {"t": 253.7, "text": "I'll choose you again and again"}, {"t": 256.8, "text": "Until distance is just a memory"}, {"t": 260.0, "text": "And forever is me and you."}];
+  const LYRIC_LINES = [
+    "I still remember that day, May thirteen",
+    "When you came into my life, like a beautiful dream",
+    "Never knew a single moment could change everything",
+    "Now every road I take somehow leads back to you and me",
+    "",
+    "And even when the miles are between us",
+    "I close my eyes and you're right here",
+    "Every night I whisper your name",
+    "Just to make you feel a little less far away",
+    "",
+    "'Cause I would cross every ocean just to hold you again",
+    "Count every sunrise, wait for the day",
+    "When distance disappears and you're standing in my arms",
+    "And I don't have to miss your smile from afar",
+    "From May thirteen until forever starts",
+    "No matter where we are, you're always in my heart",
+    "And when I finally see you again",
+    "I'll hold you like I'm never letting go",
+    "My love, I'm coming home to you",
+    "",
+    "We've had our nights when the waiting felt so long",
+    "Times when all we had were messages and songs",
+    "But somehow every \u201cI miss you\u201d made us stronger",
+    "And every day apart only made me love you longer",
+    "",
+    "So keep my heart until I'm there",
+    "Keep my place beside you",
+    "'Cause there's a future waiting for us",
+    "And I know we'll make it through",
+    "",
+    "'Cause I would cross every ocean just to hold you again",
+    "Count every sunrise, wait for the day",
+    "When distance disappears and you're standing in my arms",
+    "And I don't have to miss your smile from afar",
+    "From May thirteen until forever starts",
+    "No matter where we are, you're always in my heart",
+    "And when I finally see you again",
+    "I'll hold you like I'm never letting go",
+    "My love, I'm coming home to you",
+    "",
+    "One day we'll laugh about these lonely nights",
+    "The tears, the calls, the \u201cgoodnight\u201d",
+    "We'll look back and say, we made it through",
+    "Every mile was worth it",
+    "'Cause every road led me to you",
+    "And when I see you waiting there",
+    "I won't need words to say",
+    "I'll just hold you close",
+    "And let my heart tell you",
+    "\u201cI missed you every single day.\u201d",
+    "",
+    "I would cross every ocean just to hold you again",
+    "No more counting the days",
+    "No more wishing you were here",
+    "I'll finally have you in my arms",
+    "The place where you've always belonged",
+    "From May thirteen until forever starts",
+    "You became my home, wherever we are",
+    "And when I finally see you again",
+    "I'll hold you like I'm never letting go",
+    "After all this time, after all these miles",
+    "I'm finally coming home to you",
+    "",
+    "May thirteen was where our story began",
+    "And wherever life takes us from here",
+    "I'll choose you again and again",
+    "Until distance is just a memory",
+    "And forever is me and you."
+  ];
 
-  const track = document.getElementById('lyricsTrack');
-  LYRICS.forEach((l, i) => {
+  const scrollBox = document.getElementById('lyricsScroll');
+  LYRIC_LINES.forEach(line => {
     const p = document.createElement('p');
     p.className = 'lyrics-line';
-    p.id = 'lyric-' + i;
-    p.textContent = l.text;
-    track.appendChild(p);
+    p.innerHTML = line === "" ? "&nbsp;" : line;
+    scrollBox.appendChild(p);
   });
-
-  let currentIndex = -1;
-  function updateLyrics(){
-    const t = bgm.currentTime;
-    let idx = 0;
-    for(let i = 0; i < LYRICS.length; i++){
-      if(t >= LYRICS[i].t) idx = i; else break;
-    }
-    if(idx !== currentIndex){
-      const prev = document.getElementById('lyric-' + currentIndex);
-      if(prev) prev.classList.remove('active');
-      const cur = document.getElementById('lyric-' + idx);
-      if(cur) cur.classList.add('active');
-      currentIndex = idx;
-      const lineHeight = cur ? cur.offsetHeight : 36;
-      track.style.transform = 'translateY(calc(-50% - ' + (idx * lineHeight) + 'px + ' + (lineHeight/2) + 'px))';
-    }
-  }
-  bgm.addEventListener('timeupdate', updateLyrics);
-  bgm.addEventListener('seeked', updateLyrics);
 </script>
 
 </body>
