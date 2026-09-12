@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tap the Lyrics</title>
+<style>
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:#111;
+    color:#eee;
+    margin:0;
+    padding:20px;
+    max-width:480px;
+    margin:0 auto;
+  }
+  h1{ font-size:18px; text-align:center; margin-top:10px; }
+  p.instructions{ font-size:14px; color:#aaa; text-align:center; line-height:1.5; }
+  audio{ width:100%; margin:16px 0; }
+  #nextLine{
+    background:#1e1e1e;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:18px;
+    font-size:17px;
+    text-align:center;
+    margin-bottom:14px;
+    min-height:50px;
+  }
+  #tapBtn{
+    display:block;
+    width:100%;
+    padding:18px;
+    font-size:18px;
+    font-weight:600;
+    background:#c9a24b;
+    color:#111;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  #tapBtn:active{ background:#e3c785; }
+  #log{
+    margin-top:20px;
+    background:#000;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:12px;
+    font-family:monospace;
+    font-size:12px;
+    white-space:pre-wrap;
+    max-height:220px;
+    overflow-y:auto;
+  }
+  #copyBtn, #resetBtn{
+    margin-top:10px;
+    padding:10px 16px;
+    font-size:13px;
+    border-radius:8px;
+    border:1px solid #444;
+    background:#1e1e1e;
+    color:#eee;
+    cursor:pointer;
+  }
+  #resetBtn{ margin-left:8px; }
+  .done{ text-align:center; color:#9c9; font-size:14px; margin-top:10px; }
+</style>
+</head>
+<body>
+  <h1>Tap along to the song</h1>
+  <p class="instructions">Press play, then tap the button the instant each line below <em>starts</em> being sung. It auto-advances to the next line.</p>
+
+  <audio id="player" controls src="our-song.mp3"></audio>
+
+  <div id="nextLine">Tap play, then tap the button when this line starts:<br><strong id="lineText"></strong></div>
+
+  <button id="tapBtn">TAP HERE when line starts</button>
+
+  <div id="log"></div>
+  <button id="copyBtn">Copy timestamps</button>
+  <button id="resetBtn">Reset</button>
+  <div class="done" id="doneMsg" style="display:none;">All lines tagged! Copy the timestamps and send them back.</div>
+
+<script>
+const LINES = [
+"I still remember that day, May thirteen",
+"When you came into my life, like a beautiful dream",
+"Never knew a single moment could change everything",
+"Now every road I take somehow leads back to you and me",
+"And even when the miles are between us",
+"I close my eyes and you're right here",
+"Every night I whisper your name",
+"Just to make you feel a little less far away",
+"'Cause I would cross every ocean just to hold you again",
+"Count every sunrise, wait for the day",
+"When distance disappears and you're standing in my arms",
+"And I don't have to miss your smile from afar",
+"From May thirteen until forever starts",
+"No matter where we are, you're always in my heart",
+"And when I finally see you again",
+"I'll hold you like I'm never letting go",
+"My love, I'm coming home to you",
+"We've had our nights when the waiting felt so long",
+"Times when all we had were messages and songs",
+"But somehow every \u201cI miss you\u201d made us stronger",
+"And every day apart only made me love you longer",
+"So keep my heart until I'm there",
+"Keep my place beside you",
+"'Cause there's a future waiting for us",
+"And I know we'll make it through",
+"'Cause I would cross every ocean just to hold you again",
+"Count every sunrise, wait for the day",
+"When distance disappears and you're standing in my arms",
+"And I don't have to miss your smile from afar",
+"From May thirteen until forever starts",
+"No matter where we are, you're always in my heart",
+"And when I finally see you again",
+"I'll hold you like I'm never letting go",
+"My love, I'm coming home to you",
+"One day we'll laugh about these lonely nights",
+"The tears, the calls, the \u201cgoodnight\u201d",
+"We'll look back and say, we made it through",
+"Every mile was worth it",
+"'Cause every road led me to you",
+"And when I see you waiting there",
+"I won't need words to say",
+"I'll just hold you close",
+"And let my heart tell you",
+"\u201cI missed you every single day.\u201d",
+"I would cross every ocean just to hold you again",
+"No more counting the days",
+"No more wishing you were here",
+"I'll finally have you in my arms",
+"The place where you've always belonged",
+"From May thirteen until forever starts",
+"You became my home, wherever we are",
+"And when I finally see you again",
+"I'll hold you like I'm never letting go",
+"After all this time, after all these miles",
+"I'm finally coming home to you",
+"May thirteen was where our story began",
+"And wherever life takes us from here",
+"I'll choose you again and again",
+"Until distance is just a memory",
+"And forever is me and you."
+];
+
+let idx = 0;
+const results = [];
+const player = document.getElementById('player');
+const lineText = document.getElementById('lineText');
+const log = document.getElementById('log');
+const doneMsg = document.getElementById('doneMsg');
+
+function showLine(){
+  if(idx < LINES.length){
+    lineText.textContent = LINES[idx];
+  } else {
+    lineText.textContent = "(done)";
+    doneMsg.style.display = 'block';
+  }
+}
+showLine();
+
+document.getElementById('tapBtn').addEventListener('click', () => {
+  if(idx >= LINES.length) return;
+  const t = player.currentTime.toFixed(1);
+  results.push({t: parseFloat(t), text: LINES[idx]});
+  log.textContent = JSON.stringify(results, null, 0);
+  idx++;
+  showLine();
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = JSON.stringify(results);
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied! Paste it back in chat.');
+  }).catch(() => {
+    alert('Could not auto-copy — select the text in the box and copy manually.');
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  idx = 0;
+  results.length = 0;
+  log.textContent = '';
+  doneMsg.style.display = 'none';
+  showLine();
+});
+</script>
+</body>
+</html>
